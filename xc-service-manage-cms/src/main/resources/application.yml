@@ -1,0 +1,10 @@
+# Tomcat
+server:
+  port: 31001
+
+  # Mongodb
+spring:
+  data:
+    mongodb:
+      uri: mongodb://wars:warscat@localhost:27017/admin
+      database: xc_cms
