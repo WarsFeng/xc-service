@@ -23,8 +23,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/cms/page")
 public class CmsPageController implements CmsPageControllerApi {
 
+    private final CmsPageService service;
+
     @Autowired
-    CmsPageService service;
+    public CmsPageController(CmsPageService service) {
+        this.service = service;
+    }
 
 
     @Override

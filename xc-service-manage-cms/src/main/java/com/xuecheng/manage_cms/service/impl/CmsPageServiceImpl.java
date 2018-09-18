@@ -2,7 +2,6 @@ package com.xuecheng.manage_cms.service.impl;
 
 import com.xuecheng.framework.domain.cms.CmsPage;
 import com.xuecheng.framework.domain.cms.request.QueryPageRequest;
-import com.xuecheng.framework.model.request.RequestData;
 import com.xuecheng.framework.model.response.CommonCode;
 import com.xuecheng.framework.model.response.QueryResponseResult;
 import com.xuecheng.framework.model.response.QueryResult;
@@ -24,8 +23,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class CmsPageServiceImpl implements CmsPageService {
 
+    private final CmsPageRepository repository;
+
     @Autowired
-    CmsPageRepository repository;
+    public CmsPageServiceImpl(CmsPageRepository repository) {
+        this.repository = repository;
+    }
 
     @Override
     public QueryResponseResult findList(int page, int size, QueryPageRequest queryPageRequest) {

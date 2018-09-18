@@ -1,7 +1,6 @@
 package com.xuecheng.manage_cms.service;
 
 import com.xuecheng.framework.domain.cms.request.QueryPageRequest;
-import com.xuecheng.framework.model.request.RequestData;
 import com.xuecheng.framework.model.response.QueryResponseResult;
 
 public interface CmsPageService {
