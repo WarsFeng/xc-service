@@ -1,9 +1,10 @@
-package com.xuecheng.api.cms;
+package com.xuecheng.manage_cms.service;
 
 import com.xuecheng.framework.domain.cms.request.QueryPageRequest;
+import com.xuecheng.framework.model.request.RequestData;
 import com.xuecheng.framework.model.response.QueryResponseResult;
 
-public interface CmsPageControllerApi {
+public interface CmsPageService {
 
     /**
      * 页面列表分页查询
