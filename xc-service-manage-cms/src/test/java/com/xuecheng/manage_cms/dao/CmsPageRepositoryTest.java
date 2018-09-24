@@ -6,8 +6,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.*;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
@@ -43,7 +42,18 @@ public class CmsPageRepositoryTest {
     }
 
     @Test
-    public void testInsert(){
+    public void testFindAllPage() {
+        Pageable pageable = PageRequest.of(0, 10);
+        CmsPage probe = new CmsPage();
+        probe.setPageAlias("课程");
+        ExampleMatcher matching = ExampleMatcher.matching().withMatcher("pageAlias", ExampleMatcher.GenericPropertyMatchers.startsWith());
+        Example<CmsPage> example = Example.of(probe, matching);
+        Page<CmsPage> pages = repository.findAll(example, pageable);
+        System.out.println(pages);
+    }
+
+    @Test
+    public void testInsert() {
         CmsPage cmsPage = new CmsPage();
         cmsPage.setSiteId("t01");
         cmsPage.setTemplateId("t01");
@@ -62,16 +72,16 @@ public class CmsPageRepositoryTest {
     }
 
     @Test
-    public void testDelete(){
+    public void testDelete() {
         repository.deleteById("5ba06e0f3f1ba1525a9aca3b");
     }
 
     @Test
-    public void testUpdate(){
+    public void testUpdate() {
         Optional<CmsPage> cmsPageOptional = repository.findById("5ba06f233f1ba154cad8d59f");
         if (cmsPageOptional.isPresent()) {
             CmsPage cmsPage = cmsPageOptional.get();
-            cmsPage.setPageAliase("修改过的测试页面");
+            cmsPage.setPageAlias("修改过的测试页面");
             repository.save(cmsPage);
         }
     }

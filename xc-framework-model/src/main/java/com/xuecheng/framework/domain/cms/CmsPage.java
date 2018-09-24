@@ -8,12 +8,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.Date;
 import java.util.List;
 
-/**
- * @Author: mrt.
- * @Description:
- * @Date:Created in 2018/1/24 10:04.
- * @Modified By:
- */
 @Data
 @ToString
 @Document(collection = "cms_page")
@@ -29,7 +23,7 @@ public class CmsPage {
     //页面名称
     private String pageName;
     //别名
-    private String pageAliase;
+    private String pageAlias;
     //访问地址
     private String pageWebPath;
     //参数
