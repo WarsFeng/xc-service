@@ -2,6 +2,7 @@ package com.xuecheng.manage_cms.service.impl;
 
 import com.xuecheng.framework.domain.cms.CmsPage;
 import com.xuecheng.framework.domain.cms.request.QueryPageRequest;
+import com.xuecheng.framework.domain.cms.response.CmsPageResult;
 import com.xuecheng.framework.model.response.CommonCode;
 import com.xuecheng.framework.model.response.QueryResponseResult;
 import com.xuecheng.framework.model.response.QueryResult;
@@ -14,6 +15,8 @@ import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 /**
  * \* Created with IntelliJ IDEA.
@@ -68,5 +71,20 @@ public class CmsPageServiceImpl implements CmsPageService {
         queryResult.setList(pages.getContent());
         queryResult.setTotal(pages.getTotalElements());
         return new QueryResponseResult(CommonCode.SUCCESS, queryResult);
+    }
+
+    @Override
+    public CmsPageResult add(CmsPage cmsPage) {
+        // Check if it already exists
+        CmsPage index = repository.findByPageNameAndSiteIdAndPageWebPath(cmsPage.getPageName(), cmsPage.getSiteId(), cmsPage.getPageWebPath());
+        Optional<CmsPage> page = Optional.ofNullable(index);
+        // Not exist
+        if (!page.isPresent()) {
+            cmsPage.setPageId(null);    //  SpringDataJpa auto generate
+            // Insert and return
+            return new CmsPageResult(CommonCode.SUCCESS, repository.insert(cmsPage));
+        }
+        // Exist
+        return new CmsPageResult(CommonCode.FAIL, null);
     }
 }

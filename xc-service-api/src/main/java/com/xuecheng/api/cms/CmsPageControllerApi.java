@@ -1,6 +1,8 @@
 package com.xuecheng.api.cms;
 
+import com.xuecheng.framework.domain.cms.CmsPage;
 import com.xuecheng.framework.domain.cms.request.QueryPageRequest;
+import com.xuecheng.framework.domain.cms.response.CmsPageResult;
 import com.xuecheng.framework.model.response.QueryResponseResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -24,5 +26,14 @@ public interface CmsPageControllerApi {
             @ApiImplicitParam(name = "size", value = "每页记录数", required = true, paramType = "path", dataType = "int")
     })
     QueryResponseResult findList(int page, int size, QueryPageRequest queryPageRequest);
+
+    /**
+     * 添加页面
+     *
+     * @param cmsPage 页面实体
+     * @return 含有带Id的cmsPage
+     */
+    @ApiOperation("添加页面")
+    CmsPageResult add(CmsPage cmsPage);
 
 }
