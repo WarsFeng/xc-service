@@ -25,13 +25,17 @@ public class QuerySiteRequest extends RequestData {
     @ApiModelProperty("站点名称")
     private String siteName;
 
-    // 站点域名
-    @ApiModelProperty("站点域名")
-    private String siteDomain;
-
     // 站点端口
     @ApiModelProperty("站点端口")
     private String sitePort;
 
+
+    public boolean isEmpty() {
+        return null == siteId && null == siteName && null == sitePort;
+    }
+
+    public boolean isNotEmpty() {
+        return !isEmpty();
+    }
 
 }
