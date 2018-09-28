@@ -28,4 +28,12 @@ public class QueryPageRequest extends RequestData {
     @ApiModelProperty("模板Id")
     private String templateId;
 
+
+    public boolean isEmpty() {
+        return null == siteId && null == pageId && null == pageName && null == pageAlias && null == templateId;
+    }
+
+    public boolean isNotEmpty() {
+        return !isEmpty();
+    }
 }
