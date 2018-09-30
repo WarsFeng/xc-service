@@ -4,6 +4,7 @@ import com.xuecheng.api.cms.CmsTemplateControllerApi;
 import com.xuecheng.framework.domain.cms.request.QueryTemplateRequest;
 import com.xuecheng.framework.model.response.QueryResponseResult;
 import com.xuecheng.manage_cms.service.CmsTemplateService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
  * \* Description:
  * \
  */
+
+@Slf4j
 @RestController
 @RequestMapping("/cms/template")
 public class CmsTemplateController implements CmsTemplateControllerApi {
@@ -32,6 +35,7 @@ public class CmsTemplateController implements CmsTemplateControllerApi {
     @Override
     @GetMapping("/list/{page}/{size}")
     public QueryResponseResult findList(@PathVariable("page") int page, @PathVariable("size") int size, QueryTemplateRequest queryTemplateRequest) {
+        log.info("Query template page: {},size: {},params: {}", page, size, queryTemplateRequest);
         return service.findList(page, size, queryTemplateRequest);
     }
 }
