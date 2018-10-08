@@ -6,13 +6,11 @@ import com.xuecheng.framework.domain.cms.response.CmsPageResult;
 import com.xuecheng.framework.model.response.CommonCode;
 import com.xuecheng.framework.model.response.QueryResponseResult;
 import com.xuecheng.framework.model.response.QueryResult;
+import com.xuecheng.framework.model.response.ResponseResult;
 import com.xuecheng.manage_cms.dao.CmsPageRepository;
 import com.xuecheng.manage_cms.service.CmsPageService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -65,7 +63,7 @@ public class CmsPageServiceImpl implements CmsPageService {
         }
         Example<CmsPage> example = Example.of(probe, matching);
         // Execute find
-        Page<CmsPage> pages = repository.findAll(example, PageRequest.of(page, size));
+        Page<CmsPage> pages = repository.findAll(example, PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "pageCreateTime")));
 
         // Result
         QueryResult<CmsPage> queryResult = new QueryResult<>();
@@ -78,9 +76,8 @@ public class CmsPageServiceImpl implements CmsPageService {
     public CmsPageResult add(CmsPage cmsPage) {
         // Check if it already exists
         CmsPage index = repository.findByPageNameAndSiteIdAndPageWebPath(cmsPage.getPageName(), cmsPage.getSiteId(), cmsPage.getPageWebPath());
-        Optional<CmsPage> page = Optional.ofNullable(index);
         // Not exist
-        if (!page.isPresent()) {
+        if (null == index) {
             cmsPage.setPageId(null);    //  SpringDataJpa auto generate
             // Insert and return
             return new CmsPageResult(CommonCode.SUCCESS, repository.insert(cmsPage));
