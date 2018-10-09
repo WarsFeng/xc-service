@@ -2,7 +2,9 @@ package com.xuecheng.manage_cms.service.impl;
 
 import com.xuecheng.framework.domain.cms.CmsPage;
 import com.xuecheng.framework.domain.cms.request.QueryPageRequest;
+import com.xuecheng.framework.domain.cms.response.CmsCode;
 import com.xuecheng.framework.domain.cms.response.CmsPageResult;
+import com.xuecheng.framework.exception.ExceptionCast;
 import com.xuecheng.framework.model.response.CommonCode;
 import com.xuecheng.framework.model.response.QueryResponseResult;
 import com.xuecheng.framework.model.response.QueryResult;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 /**
@@ -76,57 +79,55 @@ public class CmsPageServiceImpl implements CmsPageService {
     public CmsPageResult add(CmsPage cmsPage) {
         // Check if it already exists
         CmsPage index = repository.findByPageNameAndSiteIdAndPageWebPath(cmsPage.getPageName(), cmsPage.getSiteId(), cmsPage.getPageWebPath());
-        // Not exist
-        if (null == index) {
-            cmsPage.setPageId(null);    //  SpringDataJpa auto generate
-            // Insert and return
-            return new CmsPageResult(CommonCode.SUCCESS, repository.insert(cmsPage));
-        }
         // Exist
-        return new CmsPageResult(CommonCode.FAIL, null);
+        if (null != index)
+            ExceptionCast.cast(CmsCode.CMS_ADDPAGE_EXISTSNAME);
+
+        // Insert and return
+        cmsPage.setPageId(null);    //  SpringDataJpa auto generate
+        return new CmsPageResult(CommonCode.SUCCESS, repository.insert(cmsPage));
     }
 
     @Override
     public CmsPage findById(String id) {
+        if (isEmpty(id))
+            ExceptionCast.cast(CmsCode.CMS_COURSE_PERVIEWISNULL);
+
         Optional<CmsPage> cmsPage = repository.findById(id);
         return cmsPage.orElse(null);
     }
 
     @Override
     public CmsPageResult edit(String id, CmsPage cmsPage) {
-        CmsPageResult result;
         CmsPage page = this.findById(id);
-        if (null != page) {
-            // 更新站点名称
-            page.setPageName(cmsPage.getPageName());
-            // 更新站点Id
-            page.setSiteId(cmsPage.getSiteId());
-            // 更新模板Id
-            page.setTemplateId(cmsPage.getTemplateId());
-            // 更新Web访问路径
-            page.setPageWebPath(cmsPage.getPageWebPath());
-            // 更新实际文件路径
-            page.setPagePhysicalPath(cmsPage.getPagePhysicalPath());
-            // 更新页面类型
-            page.setPageType(cmsPage.getPageType());
-            // 更新页面别名
-            page.setPageAlias(cmsPage.getPageAlias());
-            // 更新页面创建时间
-            page.setPageCreateTime(cmsPage.getPageCreateTime());
 
-            result = new CmsPageResult(CommonCode.SUCCESS, repository.save(page));
-        } else
-            result = new CmsPageResult(CommonCode.FAIL, null);
-        return result;
+        // 更新站点名称
+        page.setPageName(cmsPage.getPageName());
+        // 更新站点Id
+        page.setSiteId(cmsPage.getSiteId());
+        // 更新模板Id
+        page.setTemplateId(cmsPage.getTemplateId());
+        // 更新Web访问路径
+        page.setPageWebPath(cmsPage.getPageWebPath());
+        // 更新实际文件路径
+        page.setPagePhysicalPath(cmsPage.getPagePhysicalPath());
+        // 更新页面类型
+        page.setPageType(cmsPage.getPageType());
+        // 更新页面别名
+        page.setPageAlias(cmsPage.getPageAlias());
+        // 更新页面创建时间
+        page.setPageCreateTime(cmsPage.getPageCreateTime());
+
+        return new CmsPageResult(CommonCode.SUCCESS, repository.save(page));
     }
 
     @Override
     public ResponseResult delete(String id) {
         CmsPage cmsPage = this.findById(id);
-        if (null != cmsPage) {
-            repository.deleteById(id);
-            return new ResponseResult(CommonCode.SUCCESS);
-        }
-        return new ResponseResult(CommonCode.FAIL);
+        if (null == cmsPage)
+            ExceptionCast.cast(CmsCode.CMS_GENERATEHTML_DATAISNULL);
+
+        repository.deleteById(id);
+        return new ResponseResult(CommonCode.SUCCESS);
     }
 }
