@@ -85,4 +85,48 @@ public class CmsPageServiceImpl implements CmsPageService {
         // Exist
         return new CmsPageResult(CommonCode.FAIL, null);
     }
+
+    @Override
+    public CmsPage findById(String id) {
+        Optional<CmsPage> cmsPage = repository.findById(id);
+        return cmsPage.orElse(null);
+    }
+
+    @Override
+    public CmsPageResult edit(String id, CmsPage cmsPage) {
+        CmsPageResult result;
+        CmsPage page = this.findById(id);
+        if (null != page) {
+            // 更新站点名称
+            page.setPageName(cmsPage.getPageName());
+            // 更新站点Id
+            page.setSiteId(cmsPage.getSiteId());
+            // 更新模板Id
+            page.setTemplateId(cmsPage.getTemplateId());
+            // 更新Web访问路径
+            page.setPageWebPath(cmsPage.getPageWebPath());
+            // 更新实际文件路径
+            page.setPagePhysicalPath(cmsPage.getPagePhysicalPath());
+            // 更新页面类型
+            page.setPageType(cmsPage.getPageType());
+            // 更新页面别名
+            page.setPageAlias(cmsPage.getPageAlias());
+            // 更新页面创建时间
+            page.setPageCreateTime(cmsPage.getPageCreateTime());
+
+            result = new CmsPageResult(CommonCode.SUCCESS, repository.save(page));
+        } else
+            result = new CmsPageResult(CommonCode.FAIL, null);
+        return result;
+    }
+
+    @Override
+    public ResponseResult delete(String id) {
+        CmsPage cmsPage = this.findById(id);
+        if (null != cmsPage) {
+            repository.deleteById(id);
+            return new ResponseResult(CommonCode.SUCCESS);
+        }
+        return new ResponseResult(CommonCode.FAIL);
+    }
 }
