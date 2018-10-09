@@ -47,12 +47,13 @@ public class CmsPageServiceImpl implements CmsPageService {
         --page;
         if (0 >= size)
             size = 20;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "pageCreateTime"));
 
-        // Find
-        CmsPage probe = new CmsPage();
-        ExampleMatcher matching = ExampleMatcher.matching();
         //  Custom conditional find
+        Page<CmsPage> pages;
         if (queryPageRequest.isNotEmpty()) {
+            Example<CmsPage> example;
+            CmsPage probe = new CmsPage();
             if (isNotEmpty(queryPageRequest.getSiteId()))
                 probe.setSiteId(queryPageRequest.getSiteId());
             if (isNotEmpty(queryPageRequest.getTemplateId()))
@@ -60,13 +61,17 @@ public class CmsPageServiceImpl implements CmsPageService {
 
             // Fuzzy find(contains)
             if (isNotEmpty(queryPageRequest.getPageAlias())) {
+                ExampleMatcher matching = ExampleMatcher.matching();
                 probe.setPageAlias(queryPageRequest.getPageAlias());
                 matching = matching.withMatcher("pageAlias", ExampleMatcher.GenericPropertyMatchers.contains());
-            }
-        }
-        Example<CmsPage> example = Example.of(probe, matching);
-        // Execute find
-        Page<CmsPage> pages = repository.findAll(example, PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "pageCreateTime")));
+
+                example = Example.of(probe, matching);
+            } else
+                example = Example.of(probe);
+            // Execute query
+            pages = repository.findAll(example, pageable);
+        } else
+            pages = repository.findAll(pageable);
 
         // Result
         QueryResult<CmsPage> queryResult = new QueryResult<>();
@@ -74,6 +79,7 @@ public class CmsPageServiceImpl implements CmsPageService {
         queryResult.setTotal(pages.getTotalElements());
         return new QueryResponseResult(CommonCode.SUCCESS, queryResult);
     }
+
 
     @Override
     public CmsPageResult add(CmsPage cmsPage) {
