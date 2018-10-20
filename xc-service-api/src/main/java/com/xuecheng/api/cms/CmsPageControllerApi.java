@@ -44,6 +44,7 @@ public interface CmsPageControllerApi {
      * @return 页面
      */
     @ApiOperation("根据Id查询页面")
+    @ApiImplicitParam(name = "id", value = "Page id", required = true, paramType = "path", dataType = "String")
     CmsPage findById(String id);
 
     /**
@@ -54,6 +55,9 @@ public interface CmsPageControllerApi {
      * @return 修改后的CmsPage实体
      */
     @ApiOperation("修改页面")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "Page id", required = true, paramType = "path", dataType = "String"),
+    })
     CmsPageResult edit(String id, CmsPage cmsPage);
 
     /**
@@ -62,7 +66,8 @@ public interface CmsPageControllerApi {
      * @param id 要删除页面的Id
      * @return 是否成功
      */
-    @ApiOperation("修改页面")
+    @ApiOperation("删除页面")
+    @ApiImplicitParam(name = "id", value = "Page id", required = true, paramType = "path", dataType = "String")
     ResponseResult delete(String id);
 
 }
