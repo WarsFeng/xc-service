@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class ExceptionCatch {
 
     private static ImmutableMap<Class<? extends Throwable>, ResultCode> EXCEPTIONS;
+    // Son needs to use
     protected static ImmutableMap.Builder<Class<? extends Throwable>, ResultCode> builder = ImmutableMap.builder();
 
     // Custom exception
@@ -50,6 +51,8 @@ public class ExceptionCatch {
 
     static {
         builder.put(HttpMessageNotReadableException.class, CommonCode.INVALID_PARAM);
+        // Null point
+        builder.put(NullPointerException.class, CommonCode.DATA_NOT_EXIST);
     }
 
 
