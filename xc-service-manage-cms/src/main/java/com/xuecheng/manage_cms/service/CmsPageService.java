@@ -45,6 +45,14 @@ public interface CmsPageService {
     CmsPageResult edit(String id, CmsPage cmsPage);
 
     /**
+     * 静态化生成页面Html
+     *
+     * @param id 页面Id
+     * @return Html content
+     */
+    String getPageHtml(String id);
+
+    /**
      * 删除页面
      *
      * @param id 要删除页面的Id

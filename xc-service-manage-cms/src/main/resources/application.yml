@@ -8,3 +8,8 @@ spring:
     mongodb:
       uri: mongodb://wars:warscat@localhost:27017/admin
       database: xc_cms
+  # Freemarker
+  freemarker:
+    cache: false #关闭模板缓存，方便测试
+    settings:
+      template_update_delay: 0

@@ -55,9 +55,7 @@ public interface CmsPageControllerApi {
      * @return 修改后的CmsPage实体
      */
     @ApiOperation("修改页面")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "id", value = "Page id", required = true, paramType = "path", dataType = "String"),
-    })
+    @ApiImplicitParam(name = "id", value = "Page id", required = true, paramType = "path", dataType = "String")
     CmsPageResult edit(String id, CmsPage cmsPage);
 
     /**
