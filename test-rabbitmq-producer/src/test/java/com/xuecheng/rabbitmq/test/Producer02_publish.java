@@ -15,7 +15,7 @@ import java.util.Date;
  * \* Description:
  * \
  */
-public class Producer02 {
+public class Producer02_publish {
 
     private static final String QUEUE_INFORM_MAIL = "queue_inform_mail";
     private static final String QUEUE_INFORM_SMS = "queue_inform_sms";
