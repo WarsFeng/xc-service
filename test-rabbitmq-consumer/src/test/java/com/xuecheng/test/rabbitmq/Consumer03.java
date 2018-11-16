@@ -1,8 +1,6 @@
-package com.xuecheng.rabbitmq.test;
+package com.xuecheng.test.rabbitmq;
 
 import com.rabbitmq.client.*;
-
-import java.io.IOException;
 
 /**
  * \* Created with IntelliJ IDEA.
