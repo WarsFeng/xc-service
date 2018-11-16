@@ -1,0 +1,3 @@
+spring:
+  application:
+    name: xc-service-manage-cms-client

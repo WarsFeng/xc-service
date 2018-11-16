@@ -1,0 +1,23 @@
+# Tomcat
+server:
+  port: 31000
+
+  # Mongodb
+spring:
+  data:
+    mongodb:
+      uri: mongodb://wars:warscat@localhost:27017/admin
+      database: xc_cms
+
+# RabbitMQ
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guese
+    password: guese
+    virtual-host: /
+
+xuecheng:
+  mq:
+    queue: queue_cms_postpage_01
+    routingkey: 5a751fab6abb5044e0d19ea1
