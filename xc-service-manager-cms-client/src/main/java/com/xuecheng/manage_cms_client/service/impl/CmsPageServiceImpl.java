@@ -5,11 +5,10 @@ import com.mongodb.client.gridfs.GridFSDownloadStream;
 import com.mongodb.client.gridfs.model.GridFSFile;
 import com.xuecheng.framework.domain.cms.CmsPage;
 import com.xuecheng.framework.domain.cms.CmsSite;
-import com.xuecheng.framework.domain.cms.response.CmsCode;
-import com.xuecheng.framework.exception.ExceptionCast;
 import com.xuecheng.manage_cms_client.dao.CmsPageRepository;
 import com.xuecheng.manage_cms_client.dao.CmsSiteRepository;
 import com.xuecheng.manage_cms_client.service.CmsPageService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -31,6 +30,7 @@ import java.util.Optional;
  * \* Description:
  * \
  */
+@Slf4j
 @Service
 public class CmsPageServiceImpl implements CmsPageService {
 
@@ -54,15 +54,19 @@ public class CmsPageServiceImpl implements CmsPageService {
     @Override
     public void savePageToServerPath(String pageId) {
         // Get page html object id
-        Optional<CmsPage> cmsPage = getPageByPageId(pageId);
-        if (!cmsPage.isPresent())
-            ExceptionCast.cast(CmsCode.CMS_PAGE_FILE_NOT_EXISTS);
+        Optional<CmsPage> cmsPage = getPageById(pageId);
+        if (!cmsPage.isPresent()) {
+            log.error("The page of the getPageById function not exits, pageId: {}", pageId);
+            return;
+        }
         CmsPage page = cmsPage.get();
 
-        // Get page save path(SitePath+PagePhysicalPath+PageName)
-        Optional<CmsSite> cmsSite = getSiteBySiteId(page.getSiteId());
-        if (!cmsSite.isPresent())
-            ExceptionCast.cast(CmsCode.CMS_SITE_NOT_EXISTS);
+        // Get page save path(sitePath+pagePhysicalPath+pageName)
+        Optional<CmsSite> cmsSite = getSiteById(page.getSiteId());
+        if (!cmsSite.isPresent()) {
+            log.error("The site of the getSiteById function not exits, siteId: {}", page.getSiteId());
+            return;
+        }
         String pagePath = cmsSite.get().getSiteWebPath() + page.getPagePhysicalPath() + page.getPageName();
 
         // Download page html
@@ -70,8 +74,10 @@ public class CmsPageServiceImpl implements CmsPageService {
                 InputStream in = getFileById(page.getHtmlFileId());
                 FileOutputStream out = new FileOutputStream(pagePath)
         ) {
-            if (null == in)
-                ExceptionCast.cast(CmsCode.CMS_GENERATE_HTML_HTML_ISNULL);
+            if (null == in) {
+                log.error("The InputStream of the savePageToServerPath function is null, htmlFileId: {}", page.getHtmlFileId());
+                return;
+            }
             // Save page to path
             IOUtils.copy(in, out);
         } catch (IOException e) {
@@ -79,11 +85,11 @@ public class CmsPageServiceImpl implements CmsPageService {
         }
     }
 
-    private Optional<CmsPage> getPageByPageId(String pageId) {
+    private Optional<CmsPage> getPageById(String pageId) {
         return repository.findById(pageId);
     }
 
-    private Optional<CmsSite> getSiteBySiteId(String siteId) {
+    private Optional<CmsSite> getSiteById(String siteId) {
         return siteRepository.findById(siteId);
     }
 
@@ -92,6 +98,10 @@ public class CmsPageServiceImpl implements CmsPageService {
         GridFSFile gridFSFile = gridFsTemplate.findOne(new Query(Criteria.where("_id").is(fileObjectId)));
         // Get Stream
         try {
+            if (null == gridFSFile) {
+                log.error("The gridFSFile of the getFileById function is null, fileObjectId: {}", fileObjectId);
+                return null;
+            }
             GridFSDownloadStream gridFSDownloadStream = gridFSBucket.openDownloadStream(gridFSFile.getObjectId());
             GridFsResource gridFsResource = new GridFsResource(gridFSFile, gridFSDownloadStream);
             return gridFsResource.getInputStream();
