@@ -68,4 +68,14 @@ public interface CmsPageControllerApi {
     @ApiImplicitParam(name = "id", value = "Page id", required = true, paramType = "path", dataType = "String")
     ResponseResult delete(String id);
 
+    /**
+     * 发布页面, 保存静态化页面并向MQ发送Message
+     *
+     * @param id 发布页面Id
+     * @return 是否成功
+     */
+    @ApiOperation("发布页面")
+    @ApiImplicitParam(name = "id", value = "Page id", required = true, paramType = "path", dataType = "String")
+    ResponseResult post(String id);
+
 }

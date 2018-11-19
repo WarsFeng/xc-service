@@ -13,3 +13,10 @@ spring:
     cache: false #关闭模板缓存，方便测试
     settings:
       template_update_delay: 0
+  # RabbitMQ
+  rabbitmq:
+    host: localhost
+    port: 6572
+    username: guest
+    password: guest
+    virtual-host: /

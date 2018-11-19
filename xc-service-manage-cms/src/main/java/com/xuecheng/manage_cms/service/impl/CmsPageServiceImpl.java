@@ -1,5 +1,7 @@
 package com.xuecheng.manage_cms.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.google.common.base.Charsets;
 import com.mongodb.client.gridfs.GridFSBucket;
 import com.mongodb.client.gridfs.GridFSDownloadStream;
 import com.mongodb.client.gridfs.model.GridFSFile;
@@ -13,6 +15,7 @@ import com.xuecheng.framework.model.response.CommonCode;
 import com.xuecheng.framework.model.response.QueryResponseResult;
 import com.xuecheng.framework.model.response.QueryResult;
 import com.xuecheng.framework.model.response.ResponseResult;
+import com.xuecheng.manage_cms.config.RabbitConfig;
 import com.xuecheng.manage_cms.dao.CmsPageRepository;
 import com.xuecheng.manage_cms.dao.CmsTemplateRepository;
 import com.xuecheng.manage_cms.service.CmsPageService;
@@ -20,6 +23,8 @@ import freemarker.cache.StringTemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import org.apache.commons.io.IOUtils;
+import org.bson.types.ObjectId;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -32,6 +37,8 @@ import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -54,14 +61,16 @@ public class CmsPageServiceImpl implements CmsPageService {
     private final RestTemplate restTemplate;
     private final GridFsTemplate gridFsTemplate;
     private final GridFSBucket gridFSBucket;
+    private final RabbitTemplate rabbitTemplate;
 
     @Autowired
-    public CmsPageServiceImpl(CmsPageRepository repository, CmsTemplateRepository cmsTemplateRepository, RestTemplate restTemplate, GridFsTemplate gridFsTemplate, GridFSBucket gridFSBucket) {
+    public CmsPageServiceImpl(CmsPageRepository repository, CmsTemplateRepository cmsTemplateRepository, RestTemplate restTemplate, GridFsTemplate gridFsTemplate, GridFSBucket gridFSBucket, RabbitTemplate rabbitTemplate) {
         this.repository = repository;
         this.cmsTemplateRepository = cmsTemplateRepository;
         this.restTemplate = restTemplate;
         this.gridFsTemplate = gridFsTemplate;
         this.gridFSBucket = gridFSBucket;
+        this.rabbitTemplate = rabbitTemplate;
     }
 
     @Override
@@ -240,5 +249,62 @@ public class CmsPageServiceImpl implements CmsPageService {
 
         repository.deleteById(id);
         return new ResponseResult(CommonCode.SUCCESS);
+    }
+
+    @Override
+    public ResponseResult postPage(String id) {
+        // Get page string
+        String pageHtml = getPageHtml(id);
+        if (isEmpty(pageHtml))
+            ExceptionCast.cast(CmsCode.CMS_GENERATE_HTML_HTML_ISNULL);
+
+        // Save static file
+        CmsPage page = saveHtml(id, pageHtml);
+        // Send message
+        sendPostPage(id);
+
+        return new ResponseResult(CommonCode.SUCCESS);
+    }
+
+    private CmsPage saveHtml(String id, String pageHtml) {
+        Optional<CmsPage> cmsPage = repository.findById(id);
+        if (!cmsPage.isPresent())
+            ExceptionCast.cast(CmsCode.CMS_PAGE_NOT_EXISTS);
+        CmsPage page = cmsPage.get();
+
+        // Delete the html if it exist
+        String htmlFileId = page.getHtmlFileId();
+        if (isNotEmpty(htmlFileId))
+            gridFsTemplate.delete(Query.query(Criteria.where("_id").is(htmlFileId)));
+
+        // Convert to inputStream
+        InputStream inputStream = IOUtils.toInputStream(pageHtml, Charsets.UTF_8);
+        // Save to mongodb
+        ObjectId objectId = gridFsTemplate.store(inputStream, page.getPageName());
+
+        // Update page of the database
+        page.setHtmlFileId(objectId.toHexString());
+        return repository.save(page);
+    }
+
+    /**
+     * Send post page message to rabbitmq
+     * Message: { 'pageId' : ''}
+     *
+     * @param id Page id
+     */
+    private void sendPostPage(String id) {
+        // Message
+        Map<String, String> message = new HashMap<>(1);
+        message.put("pageId", id);
+
+        Optional<CmsPage> cmsPage = repository.findById(id);
+        if (!cmsPage.isPresent())
+            ExceptionCast.cast(CmsCode.CMS_PAGE_NOT_EXISTS);
+        // Send
+        rabbitTemplate.convertAndSend(
+                RabbitConfig.EX_ROUTING_CMS_POSTPAGE,
+                cmsPage.get().getSiteId(),
+                JSON.toJSONString(message));
     }
 }

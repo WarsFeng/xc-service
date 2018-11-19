@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
  * \* User: wars
  * \* Date: 18-10-21
  * \* Time: 下午12:06
- * \* Description: MongoDB configuration
+ * \* Description: MongoDB config
  * \
  */
 @Configuration

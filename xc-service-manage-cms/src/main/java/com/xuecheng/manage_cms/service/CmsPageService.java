@@ -59,4 +59,12 @@ public interface CmsPageService {
      * @return 是否成功
      */
     ResponseResult delete(String id);
+
+    /**
+     * 发布页面，保存静态化页面，并向MQ发送Message
+     *
+     * @param id 页面Id
+     * @return 是否成功
+     */
+    ResponseResult postPage(String id);
 }
