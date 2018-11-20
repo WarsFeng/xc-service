@@ -14,7 +14,7 @@ spring:
     host: localhost
     port: 5672
     username: guest
-    password: guese
+    password: guest
     virtual-host: /
 
 xuecheng:
