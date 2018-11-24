@@ -1,6 +1,6 @@
 package com.xuecheng.framework.domain.course.ext;
 
-import com.xuecheng.framework.domain.course.Teachplan;
+import com.xuecheng.framework.domain.course.TeachPlan;
 import lombok.Data;
 import lombok.ToString;
 
@@ -11,7 +11,7 @@ import java.util.List;
  */
 @Data
 @ToString
-public class TeachplanParameter extends Teachplan {
+public class TeachPlanParameter extends TeachPlan {
 
     //二级分类ids
     List<String> bIds;

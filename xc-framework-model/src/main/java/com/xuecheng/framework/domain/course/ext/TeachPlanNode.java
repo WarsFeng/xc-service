@@ -1,6 +1,6 @@
 package com.xuecheng.framework.domain.course.ext;
 
-import com.xuecheng.framework.domain.course.Teachplan;
+import com.xuecheng.framework.domain.course.TeachPlan;
 import lombok.Data;
 import lombok.ToString;
 
@@ -11,8 +11,8 @@ import java.util.List;
  */
 @Data
 @ToString
-public class TeachplanNode extends Teachplan {
+public class TeachPlanNode extends TeachPlan {
 
-    List<TeachplanNode> children;
+    List<TeachPlanNode> children;
 
 }

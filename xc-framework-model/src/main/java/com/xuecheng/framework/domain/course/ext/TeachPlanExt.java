@@ -1,6 +1,6 @@
 package com.xuecheng.framework.domain.course.ext;
 
-import com.xuecheng.framework.domain.course.Teachplan;
+import com.xuecheng.framework.domain.course.TeachPlan;
 import lombok.Data;
 import lombok.ToString;
 
@@ -9,7 +9,7 @@ import lombok.ToString;
  */
 @Data
 @ToString
-public class TeachplanExt extends Teachplan {
+public class TeachPlanExt extends TeachPlan {
 
     //媒资文件id
     private String mediaId;
